@@ -1,40 +1,35 @@
-#This program is written is python 3.6 and uses a text to speech library
+#Import the neccessary libraries
 
-#Import libraries
-
-import pyttsx3
-import datetime
-import speech_recognition as sr 
-import webbrowser
-import os
-
-#Setup pyttsx3
+import pyttsx3 #Convert text to speech
+import datetime #For measuring the time
+import speech_recognition as sr #To understand what the user is speaking
+import webbrowser #To enable the webbrowser
+import os #For accessing the os
 
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)
 
-count = 0   #This variable stores the number of symptoms the person displays
+count = 0 #To store the number of symptoms displayed
+UserData = open("UserData.txt","w") #To send user data to a file
 
-def speak(audio):
+def speak(audio): 
     engine.say(audio)
     engine.runAndWait()
 
-#Wish the user 
-
-def wishMe():
+def wishMe(): #Greet the user according to the time of the day
     hour = int(datetime.datetime.now().hour)
     if hour>=0 and hour<12:
         speak("Good morning ")
     elif hour>=12 and hour<4:
-        speak("Good afternoon User")
+        speak("Good afternoon")
     else:
-        speak("Good Evening User")
+        speak("Good Evening")
 
-    speak("I am your Doctor")
+    speak("I am your evaluation bot")
     
 def takeCommand():
-    # takes my command from microphone and gives out text
+    # takes my command from microphone and gives text
     r =sr.Recognizer()
     with sr.Microphone() as source:
         print("listening...")
@@ -43,7 +38,7 @@ def takeCommand():
     try:
         print("recognizing...")
         query = r.recognize_google(audio, language ='en-in')
-        print("user said : ", query)
+
     except Exception as e:
         print(e)
         speak("Sorry User, can you repeat that again?")
@@ -51,9 +46,11 @@ def takeCommand():
     return query
 
 if __name__ == "__main__":
-    wishMe()
+
+    wishMe() #Greets the user
+
     while True:
-        speak("Do you have a fever?") #Symptom Check number 1
+        speak("Do you have a fever?") #Check symptoms
         query = takeCommand().lower()
         if 'yes' in query:
             speak("ok")
@@ -61,7 +58,7 @@ if __name__ == "__main__":
         else:
             speak("ok")
 
-        speak("Do you feel tired?") #Symptom Check number 2
+        speak("Do you feel tired?")
         query = takeCommand().lower()
         if 'yes' in query:
             speak("ok")
@@ -69,7 +66,7 @@ if __name__ == "__main__":
         else:
             speak("ok")
 
-        speak("Do you have dry cough?") #Symptom Check number 3
+        speak("Do you have dry cough?")
         query = takeCommand().lower()
         if 'yes' in query:
             speak("ok")
@@ -77,7 +74,7 @@ if __name__ == "__main__":
         else:
             speak("ok")
 
-        speak("Do you have shortage of breath or other respiratory problems?") #Symptom Check number 4
+        speak("Do you have shortage of breath or other respiratory problems?")
         query = takeCommand().lower()
         if 'yes' in query:
             speak("ok")
@@ -85,7 +82,7 @@ if __name__ == "__main__":
         else:
             speak("ok")
 
-        speak("Do you have  aches, pains, nasal congestion, runny nose, sore throat or diarrhea?") #Symptom Check number 5
+        speak("Do you have  aches, pains, nasal congestion, runny nose, sore throat or diarrhea?")
         query = takeCommand().lower()
         if 'yes' in query:
             speak("ok")
@@ -93,27 +90,37 @@ if __name__ == "__main__":
         else:
             speak("ok")
 
-#Tell them their risk level based on the number of symptom they display
+
 
         if count==5:
-            speak("You have a high risk of coronavirus, get yourself checked")
+            speak("You have a high risk of coronavirus, get yourself checked") #Gives out results based on the number of symptoms
+            UserData.write("HighRisk")
+            UserData.close()
+
             
         elif count==4:
             speak("You have a moderate risk of coronavirus, get yourself checked")
+            UserData.write("ModerateRisk") #Sends Data to a file for records purposes
+            UserData.close()
             
         elif count==3:
-            speak("You have a low risk of coronavirus, get yourself checked")
-            
+            speak("You have a low risk of coronavirus, stay home and avoid contact with others")
+            UserData.write("LowRisk")
+            UserData.close() #Closes the write function
 
         else:
             speak("You seem to be fine, but still keep yourself in quarantine")
+            UserData.write("VeryLowRisk")
         
-        speak("Say more info to visit w h os website") #Ask them to say 'more info' to visit WHOs website
+        speak("Say more info to visit w h os website or say nothing to end session") #Asks the user wether he/he wants to be redirected to WHOs website or exit
         query = takeCommand().lower()
      
-        if 'more info' in query: #Redirect them to WHOs website 
-            webbrowser.open("who.int") 
-            exit()
+        if 'more info' in query:
+            webbrowser.open("who.int") #Redirect them to WHOs website
+            exit() #Close the program
         else:
             speak("Closing program")
             exit()
+
+
+
