@@ -102,7 +102,7 @@ if __name__ == "__main__":
             speak("You have a moderate risk of coronavirus, get yourself checked")
             
         elif count==3:
-            speak("You have a lower than moderate risk of coronavirus, stay home and avoid contact with others and get yourself checked")
+            speak("You have a low risk of coronavirus, get yourself checked")
             
 
         else:
