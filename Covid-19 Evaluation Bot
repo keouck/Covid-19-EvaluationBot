@@ -1,0 +1,119 @@
+#This program is written is python 3.6 and uses a text to speech library
+
+#Import libraries
+
+import pyttsx3
+import datetime
+import speech_recognition as sr 
+import webbrowser
+import os
+
+#Setup pyttsx3
+
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+count = 0   #This variable stores the number of symptoms the person displays
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+#Wish the user 
+
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<12:
+        speak("Good morning ")
+    elif hour>=12 and hour<4:
+        speak("Good afternoon User")
+    else:
+        speak("Good Evening User")
+
+    speak("I am your Doctor")
+    
+def takeCommand():
+    # takes my command from microphone and gives out text
+    r =sr.Recognizer()
+    with sr.Microphone() as source:
+        print("listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+    try:
+        print("recognizing...")
+        query = r.recognize_google(audio, language ='en-in')
+        print("user said : ", query)
+    except Exception as e:
+        print(e)
+        speak("Sorry User, can you repeat that again?")
+        return "None"
+    return query
+
+if __name__ == "__main__":
+    wishMe()
+    while True:
+        speak("Do you have a fever?") #Symptom Check number 1
+        query = takeCommand().lower()
+        if 'yes' in query:
+            speak("ok")
+            count = count+1
+        else:
+            speak("ok")
+
+        speak("Do you feel tired?") #Symptom Check number 2
+        query = takeCommand().lower()
+        if 'yes' in query:
+            speak("ok")
+            count = count+1
+        else:
+            speak("ok")
+
+        speak("Do you have dry cough?") #Symptom Check number 3
+        query = takeCommand().lower()
+        if 'yes' in query:
+            speak("ok")
+            count = count+1
+        else:
+            speak("ok")
+
+        speak("Do you have shortage of breath or other respiratory problems?") #Symptom Check number 4
+        query = takeCommand().lower()
+        if 'yes' in query:
+            speak("ok")
+            count = count+1
+        else:
+            speak("ok")
+
+        speak("Do you have  aches, pains, nasal congestion, runny nose, sore throat or diarrhea?") #Symptom Check number 5
+        query = takeCommand().lower()
+        if 'yes' in query:
+            speak("ok")
+            count = count+1
+        else:
+            speak("ok")
+
+#Tell them their risk level based on the number of symptom they display
+
+        if count==5:
+            speak("You have a high risk of coronavirus, get yourself checked")
+            
+        elif count==4:
+            speak("You have a moderate risk of coronavirus, get yourself checked")
+            
+        elif count==3:
+            speak("You have a lower than moderate risk of coronavirus, stay home and avoid contact with others and get yourself checked")
+            
+
+        else:
+            speak("You seem to be fine, but still keep yourself in quarantine")
+        
+        speak("Say more info to visit w h os website") #Ask them to say 'more info' to visit WHOs website
+        query = takeCommand().lower()
+     
+        if 'more info' in query: #Redirect them to WHOs website 
+            webbrowser.open("who.int") 
+            exit()
+        else:
+            speak("Closing program")
+            exit()
